@@ -28,15 +28,15 @@ Se ha creado el dominio en el controlador de dominio, instalando los servicios n
 
 Se ha definido la estructura de unidades organizativas (OU), creando una OU principal de usuarios y otras específicas para los distintos departamentos.
 
-![02-nexus-ad-ou-structure](02-nexus-ad-ou-structure)
+![02-nexus-ad-ou-structure](capturas/02-nexus-ad-ou-structure.png)
 
 Se ha configurado un sufijo UPN personalizado para su uso en el entorno híbrido.
 
-![03-nexus-upn-suffix-added](03-nexus-upn-suffix-added)
+![03-nexus-upn-suffix-added](capturas/03-nexus-upn-suffix-added.png)
 
 Se han creado los grupos necesarios para la gestión de usuarios.
 
-![04-nexus-ad-group-membership](04-nexus-ad-group-membership)
+![04-nexus-ad-group-membership](capturas/04-nexus-ad-group-membership.png)
 
 ---
 
@@ -46,22 +46,22 @@ Se ha configurado DHCP con un rango de direcciones IP de 192.168.0.10 a 192.168.
 
 Se une el equipo cliente al dominio y se valida la IP asignada:
 
-![05-nexus-dhcp-client-ip](05-nexus-dhcp-client-ip)
+![05-nexus-dhcp-client-ip](capturas/05-nexus-dhcp-client-ip.png)
 
 Validación de unión al dominio:
 
-![06-nexus-client-domain-joined](06-nexus-client-domain-joined)  
-![07-nexus-domain-user-login](07-nexus-domain-user-login)
+![06-nexus-client-domain-joined](capturas/06-nexus-client-domain-joined.png)
+![07-nexus-domain-user-login](capturas/07-nexus-domain-user-login.png)
 
 Se crea una GPO para mapear la unidad de red V: (Ventas):
 
-![08-gpo-drive-mapping-ventas](08-gpo-drive-mapping-ventas)  
-![09-client-drive-mapped](09-client-drive-mapped)
+![08-gpo-drive-mapping-ventas](capturas/08-gpo-drive-mapping-ventas.png)
+![09-client-drive-mapped](capturas/09-client-drive-mapped.png)
 
 Se despliega una impresora mediante GPO:
 
-![10-gpo-printer-deployment](10-gpo-printer-deployment)  
-![11-client-printer-deployed](11-client-printer-deployed)
+![10-gpo-printer-deployment](capturas/10-gpo-printer-deployment.png)
+![11-client-printer-deployed](capturas/11-client-printer-deployed.png)
 
 ---
 
@@ -71,11 +71,11 @@ Se instala Azure AD Connect en el controlador de dominio y se configura la sincr
 
 Validación de usuarios sincronizados:
 
-![12-entra-synced-users](12-entra-synced-users)
+![12-entra-synced-users](capturas/12-entra-synced-users.png)
 
 Se valida el estado híbrido del equipo:
 
-![13-hybrid-join-status-nex-cl01](13-hybrid-join-status-nex-cl01)
+![13-hybrid-join-status-nex-cl01](capturas/13-hybrid-join-status-nex-cl01.png)
 
 ---
 
@@ -83,16 +83,16 @@ Se valida el estado híbrido del equipo:
 
 Debido a problemas en el enrollment automático, se implementa una GPO para forzar la inscripción en Intune.
 
-![14-gpo-intune-created](14-gpo-intune-created)  
-![15-gpo-intune-autoenrollment-config](15-gpo-intune-autoenrollment-config)
+![14-gpo-intune-created](capturas/14-gpo-intune-created.png)
+![15-gpo-intune-autoenrollment-config](capturas/15-gpo-intune-autoenrollment-config.png)
 
 Validación en Entra ID:
 
-![16-intune-device-enrolled-nex-cl01](16-intune-device-enrolled-nex-cl01)
+![16-intune-device-enrolled-nex-cl01](capturas/16-intune-device-enrolled-nex-cl01.png)
 
 Validación en Intune:
 
-![17-intune-device-visible](17-intune-device-visible)
+![17-intune-device-visible](capturas/17-intune-device-visible.png)
 
 ---
 
@@ -100,12 +100,12 @@ Validación en Intune:
 
 Se crea el usuario cgarcia y el grupo GG-Excepciones, utilizado para gestionar exclusiones en políticas de acceso.
 
-![18-ad-user-cgarcia-created](18-ad-user-cgarcia-created)  
-![19-ad-group-excepciones-members](19-ad-group-excepciones-members)
+![18-ad-user-cgarcia-created](capturas/18-ad-user-cgarcia-created.png)
+![19-ad-group-excepciones-members](capturas/19-ad-group-excepciones-members.png)
 
 Se valida la sincronización con Entra ID:
 
-![20-entra-user-cgarcia-synced](20-entra-user-cgarcia-synced)
+![20-entra-user-cgarcia-synced](capturas/20-entra-user-cgarcia-synced.png)
 
 ---
 
@@ -113,29 +113,29 @@ Se valida la sincronización con Entra ID:
 
 Se crea una política de cumplimiento basada en el estado del firewall.
 
-![21-intune-compliance-policy-created](21-intune-compliance-policy-created)
+![21-intune-compliance-policy-created](capturas/21-intune-compliance-policy-created.png)
 
 Asignación al grupo:
 
-![22-intune-compliance-assigned-ventas](22-intune-compliance-assigned-ventas)
+![22-intune-compliance-assigned-ventas](capturas/22-intune-compliance-assigned-ventas.png)
 
 Configuración de Conditional Access:
 
-![23-entra-ca-exclude-groups](23-entra-ca-exclude-groups)  
-![24-entra-ca-include-groups](24-entra-ca-include-groups)
+![23-entra-ca-exclude-groups](capturas/23-entra-ca-exclude-groups.png)
+![24-entra-ca-include-groups](capturas/24-entra-ca-include-groups.png)
 
 Prueba de incumplimiento:
 
-![25-client-firewall-disabled](25-client-firewall-disabled)  
-![26-intune-device-noncompliant-firewall](26-intune-device-noncompliant-firewall)
+![25-client-firewall-disabled](capturas/25-client-firewall-disabled.png)
+![26-intune-device-noncompliant-firewall](capturas/26-intune-device-noncompliant-firewall.png)
 
 Bloqueo de acceso:
 
-![27-entra-ca-blocked-ventas-user](27-entra-ca-blocked-ventas-user)
+![27-entra-ca-blocked-ventas-user](capturas/27-entra-ca-blocked-ventas-user.png)
 
 Excepción aplicada:
 
-![28-entra-ca-exclusion-working](28-entra-ca-exclusion-working)
+![28-entra-ca-exclusion-working](capturas/28-entra-ca-exclusion-working.png)
 
 ---
 
