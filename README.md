@@ -11,7 +11,23 @@ Este enfoque permite simular un modelo básico de seguridad tipo Zero Trust, don
 
 ---
 
-## **2. Arquitectura del entorno**
+## **2. Enfoque del laboratorio**
+Este laboratorio no está enfocado a la instalación paso a paso, sino a validar el comportamiento de un entorno híbrido en escenarios reales de gestión de identidades, dispositivos y control de acceso.
+
+---
+
+## **3. Qué se ha implementado**
+- Entorno híbrido Active Directory + Entra ID
+- Hybrid Join de dispositivos
+- Gestión de dispositivos con Intune
+- Políticas de cumplimiento
+- Conditional Access basado en estado del dispositivo
+- Validación de escenarios de acceso y exclusión
+- Resolución de incidencias reales durante la implementación
+
+---
+
+## **4. Arquitectura del entorno**
 La arquitectura del entorno consta de los siguientes elementos:
 
 - Controlador de dominio (Windows Server 2022): NEX-DC01  
@@ -24,7 +40,7 @@ Se trata de un entorno reducido, pero suficiente para reproducir los flujos clav
 
 ---
 
-## **3. Configuración on-prem (Active Directory)**
+## **5. Configuración on-prem (Active Directory)**
 Se despliega el dominio en el controlador de dominio, incluyendo los servicios de DNS y DHCP necesarios para la operativa del entorno.
 
 ![01-nexus-domain-created](capturas/01-nexus-domain-created.png)
@@ -43,7 +59,7 @@ Se crean los grupos de seguridad que servirán como base para la asignación de 
 
 ---
 
-## **4. Servicios base y GPO**
+## **6. Servicios base y GPO**
 Se configura DHCP en el controlador de dominio, definiendo un rango de direcciones IP desde 192.168.0.10 hasta 192.168.0.50 con una concesión de 8 días, simulando asignación dinámica en red corporativa.
 
 El equipo cliente se une al dominio, validando la correcta asignación de IP y la conectividad con el entorno.
@@ -70,7 +86,7 @@ Se valida su correcta aplicación en el cliente tras la actualización de polít
 
 ---
 
-## **5. Integración híbrida (Entra ID)**
+## **7. Integración híbrida (Entra ID)**
 Se instala Azure AD Connect en el controlador de dominio para habilitar la sincronización entre Active Directory y Entra ID.
 
 Se configura la sincronización de identidades, permitiendo que los usuarios on-prem estén disponibles en el entorno cloud.
@@ -83,7 +99,7 @@ Se valida el estado híbrido del dispositivo mediante `dsregcmd /status`, confir
 
 ---
 
-## **6. Gestión de dispositivos (Intune)**
+## **8. Gestión de dispositivos (Intune)**
 El proceso de enrollment en Intune no se realiza automáticamente, lo que obliga a intervenir para forzar la inscripción mediante políticas.
 
 Se implementa una GPO de auto enrollment para registrar los dispositivos en Intune al iniciar sesión con un usuario de dominio.
@@ -101,7 +117,7 @@ Se confirma su aparición en Intune como dispositivo gestionado.
 
 ---
 
-## **7. Gestión de identidades**
+## **9. Gestión de identidades**
 Se crea el usuario `cgarcia` junto con el grupo `GG-Excepciones`, que se utilizará para validar escenarios de exclusión en políticas de acceso.
 
 ![18-ad-user-cgarcia-created](capturas/18-ad-user-cgarcia-created.png)  
@@ -113,7 +129,7 @@ Se comprueba su correcta sincronización con Entra ID.
 
 ---
 
-## **8. Control de acceso y cumplimiento (Conditional Access + Intune)**
+## **10. Control de acceso y cumplimiento (Conditional Access + Intune)**
 Se define una política de cumplimiento en Intune basada en el estado del firewall, como indicador simple pero efectivo del estado del dispositivo.
 
 ![21-intune-compliance-policy-created](capturas/21-intune-compliance-policy-created.png)
@@ -145,7 +161,7 @@ Se valida que los usuarios excluidos mantienen acceso.
 
 ---
 
-## **9. Incidencias relevantes y resolución**
+## **11. Incidencias relevantes y resolución**
 Durante la implementación se han identificado incidencias reales relacionadas con sincronización, conectividad y gestión de dispositivos.
 
 **1. Conectividad parcial en el servidor (DNS)**  
@@ -240,7 +256,7 @@ El acceso se bloquea correctamente en dispositivos no compliant.
 
 ---
 
-## **10. Conclusiones**
+## **12. Conclusiones**
 Este laboratorio demuestra la implementación de un entorno híbrido funcional donde identidad, dispositivo y acceso están interrelacionados.
 
 Más allá del despliegue técnico, se valida:
@@ -250,6 +266,7 @@ Más allá del despliegue técnico, se valida:
 
 El resultado es un entorno donde el acceso a recursos depende no solo de la identidad, sino también del cumplimiento del dispositivo, alineándose con modelos modernos de seguridad.
 
+Este laboratorio demuestra la capacidad de trabajar con identidades híbridas, gestión de endpoints y control de acceso basado en estado del dispositivo, entendiendo tanto la configuración como el comportamiento real del entorno.
 ---
 
 
