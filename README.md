@@ -148,7 +148,95 @@ Se valida que los usuarios excluidos mantienen acceso.
 ## **9. Incidencias relevantes y resolución**
 Durante la implementación se han identificado incidencias reales relacionadas con sincronización, conectividad y gestión de dispositivos.
 
-(Se mantiene tu bloque tal cual — ya está bien y es de lo mejor del README)
+**1. Conectividad parcial en el servidor (DNS)**  
+**Problema**  
+El servidor tenía conectividad (ping) pero no podía acceder a servicios externos.  
+
+**Causa**  
+Falta de configuración de reenviadores DNS.  
+
+**Solución**  
+Configuración de forwarders externos:  
+• 8.8.8.8  
+• 1.1.1.1  
+
+**Conclusión**  
+La conectividad IP no garantiza resolución DNS funcional.  
+
+---
+
+**2. Hybrid Join sin inscripción en Intune**  
+**Problema**  
+El dispositivo estaba correctamente unido:  
+• AzureAdJoined: YES  
+• DomainJoined: YES  
+• MDM: None  
+
+**Causa**  
+El proceso de auto enrollment no se ejecutó automáticamente.  
+
+**Solución**  
+Aplicación de GPO de inscripción MDM:  
+• Ruta:  
+Configuración del equipo → Plantillas administrativas → Componentes de Windows → MDM  
+• Directiva: inscripción automática con credenciales de Entra  
+• Tipo: Usuario  
+
+**Resultado**  
+El dispositivo se registró correctamente en Intune.  
+
+---
+
+**3. Estado inconsistente de enrolamiento**  
+**Problema**  
+El dispositivo desapareció de Entra tras intentar el enrollment.  
+
+**Causa**  
+Registro en estado inconsistente.  
+
+**Solución**  
+dsregcmd /leave  
+• Reinicio del equipo  
+• Inicio de sesión con usuario de dominio  
+• Reaplicación de GPO  
+
+**Resultado**  
+Estado final correcto:  
+• AzureAdJoined: YES  
+• DomainJoined: YES  
+• MDM: Microsoft Intune  
+
+---
+
+**4. Error al asignar licencias (Usage Location)**  
+**Problema**  
+No era posible asignar licencias a usuarios sincronizados.  
+
+**Causa**  
+Falta de atributo "país/región" en Active Directory.  
+
+**Solución**  
+Configuración desde AD:  
+• Usuario → Propiedades → Dirección → País: España  
+
+**Resultado**  
+Asignación de licencias completada correctamente.  
+
+---
+
+**5. Conditional Access no aplicado**  
+**Problema**  
+El acceso no era bloqueado pese a incumplir la política.  
+
+**Causa**  
+La política no estaba aplicada a todos los recursos.  
+
+**Solución**  
+Configuración de:  
+• Recursos → All cloud apps  
+
+**Resultado**  
+El acceso se bloquea correctamente en dispositivos no compliant.  
 
 ---
 
