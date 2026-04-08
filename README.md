@@ -259,3 +259,265 @@ Como resultado final, se ha conseguido:
 - Control de acceso basado en cumplimiento del dispositivo  
 
 Este laboratorio demuestra no solo la configuración del entorno, sino también la capacidad de diagnóstico y resolución de problemas en escenarios reales.
+
+# Lab NEXUS — Hybrid Environment (AD + Entra ID + Intune + Conditional Access)
+
+## 1. Introduction
+
+This lab implements a hybrid environment based on on-premises Active Directory and Microsoft Entra ID, focused on user and device management in a corporate scenario.
+
+The objective is to simulate a real enterprise environment, not only by deploying the infrastructure, but also by working on its practical use: identity synchronization, device management with Intune, and access control through Conditional Access.
+
+---
+
+## 2. Environment Architecture
+
+The environment consists of the following components:
+
+- Domain Controller (Windows Server 2022): NEX-DC01  
+- Client machine (Windows 10/11): NEX-CL01  
+- On-prem domain: NEXUS.local  
+- Microsoft tenant: sergiotech26.onmicrosoft.com  
+- Services used: Active Directory, DNS, DHCP, Entra ID, Azure AD Connect, Intune and Conditional Access  
+
+---
+
+## 3. On-prem Configuration (Active Directory)
+
+The domain was created on the domain controller, installing required services such as DNS and DHCP.
+
+![01-nexus-domain-created](capturas/01-nexus-domain-created.png)
+
+An Organizational Unit (OU) structure was defined, including a main users OU and additional OUs for different departments.
+
+![02-nexus-ad-ou-structure](capturas/02-nexus-ad-ou-structure.png)
+
+A custom UPN suffix was configured to support hybrid identity.
+
+![03-nexus-upn-suffix-added](capturas/03-nexus-upn-suffix-added.png)
+
+Required groups were created for user management and later use in policy assignment.
+
+![04-nexus-ad-group-membership](capturas/04-nexus-ad-group-membership.png)
+
+---
+
+## 4. Core Services and GPO
+
+DHCP was configured with an IP range from 192.168.0.10 to 192.168.0.50, with an 8-day lease.
+
+The client machine was joined to the domain and validated via IP assignment:
+
+![05-nexus-dhcp-client-ip](capturas/05-nexus-dhcp-client-ip.png)
+
+Domain join validation:
+
+![06-nexus-client-domain-joined](capturas/06-nexus-client-domain-joined.png)  
+![07-nexus-domain-user-login](capturas/07-nexus-domain-user-login.png)
+
+A GPO was created to map a network drive (V: - Ventas):
+
+![08-gpo-drive-mapping-ventas](capturas/08-gpo-drive-mapping-ventas.png)  
+![09-client-drive-mapped](capturas/09-client-drive-mapped.png)
+
+A shared printer was deployed using GPO:
+
+![10-gpo-printer-deployment](capturas/10-gpo-printer-deployment.png)  
+![11-client-printer-deployed](capturas/11-client-printer-deployed.png)
+
+---
+
+## 5. Hybrid Integration (Entra ID)
+
+Azure AD Connect was installed on the domain controller and configured to synchronize identities.
+
+Validation of synced users:
+
+![12-entra-synced-users](capturas/12-entra-synced-users.png)
+
+Hybrid join status was validated on the client machine:
+
+![13-hybrid-join-status-nex-cl01](capturas/13-hybrid-join-status-nex-cl01.png)
+
+---
+
+## 6. Device Management (Intune)
+
+Due to issues with automatic enrollment, a GPO was implemented to force device registration into Intune.
+
+![14-gpo-intune-created](capturas/14-gpo-intune-created.png)  
+![15-gpo-intune-autoenrollment-config](capturas/15-gpo-intune-autoenrollment-config.png)
+
+Validation in Entra ID:
+
+![16-intune-device-enrolled-nex-cl01](capturas/16-intune-device-enrolled-nex-cl01.png)
+
+Validation in Intune:
+
+![17-intune-device-visible](capturas/17-intune-device-visible.png)
+
+---
+
+## 7. Identity Management
+
+A new user (cgarcia) and a group (GG-Excepciones) were created for use in Conditional Access scenarios.
+
+![18-ad-user-cgarcia-created](capturas/18-ad-user-cgarcia-created.png)  
+![19-ad-group-excepciones-members](capturas/19-ad-group-excepciones-members.png)
+
+User synchronization was validated in Entra ID:
+
+![20-entra-user-cgarcia-synced](capturas/20-entra-user-cgarcia-synced.png)
+
+---
+
+## 8. Access Control and Compliance (Conditional Access + Intune)
+
+A compliance policy was created in Intune, requiring the Windows Firewall to be enabled.
+
+![21-intune-compliance-policy-created](capturas/21-intune-compliance-policy-created.png)
+
+Assignment to group:
+
+![22-intune-compliance-assigned-ventas](capturas/22-intune-compliance-assigned-ventas.png)
+
+Conditional Access configuration:
+
+![23-entra-ca-exclude-groups](capturas/23-entra-ca-exclude-groups.png)  
+![24-entra-ca-include-groups](capturas/24-entra-ca-include-groups.png)
+
+Non-compliance test:
+
+![25-client-firewall-disabled](capturas/25-client-firewall-disabled.png)  
+![26-intune-device-noncompliant-firewall](capturas/26-intune-device-noncompliant-firewall.png)
+
+Access blocked:
+
+![27-entra-ca-blocked-ventas-user](capturas/27-entra-ca-blocked-ventas-user.png)
+
+Exception applied:
+
+![28-entra-ca-exclusion-working](capturas/28-entra-ca-exclusion-working.png)
+
+---
+
+## 9. Relevant Issues and Resolution
+
+During the implementation of the hybrid environment, several real-world issues were identified related to connectivity, synchronization and device management.
+
+### 1. Partial connectivity on the server (DNS)
+
+**Problem**  
+The server had network connectivity (ping) but could not access external services.
+
+**Cause**  
+Missing DNS forwarders.
+
+**Solution**  
+Configured external forwarders:
+- 8.8.8.8  
+- 1.1.1.1  
+
+**Conclusion**  
+IP connectivity does not guarantee proper DNS resolution.
+
+---
+
+### 2. Hybrid Join without Intune enrollment
+
+**Problem**  
+The device was correctly joined:
+- AzureAdJoined: YES  
+- DomainJoined: YES  
+- MDM: None  
+
+**Cause**  
+Auto enrollment process did not trigger automatically.
+
+**Solution**  
+Applied GPO for MDM enrollment:
+- Computer Configuration → Administrative Templates → Windows Components → MDM  
+- Enable automatic enrollment using Entra credentials  
+- Credential type: User  
+
+**Result**  
+Device successfully enrolled in Intune.
+
+---
+
+### 3. Inconsistent enrollment state
+
+**Problem**  
+The device disappeared from Entra after enrollment attempt.
+
+**Cause**  
+Device registration entered an inconsistent state.
+
+**Solution**
+dsregcmd /leave  
+- Reboot  
+- Domain user login  
+- Reapply GPO  
+
+**Result**  
+Final state:
+- AzureAdJoined: YES  
+- DomainJoined: YES  
+- MDM: Microsoft Intune  
+
+---
+
+### 4. License assignment error (Usage Location)
+
+**Problem**  
+Licenses could not be assigned to synced users.
+
+**Cause**  
+Missing "usage location" attribute.
+
+**Solution**  
+Defined location during license assignment.
+
+**Result**  
+Licenses assigned successfully.
+
+---
+
+### 5. Conditional Access not applied
+
+**Problem**  
+Access was not blocked despite policy conditions.
+
+**Cause**  
+Policy was not applied to all resources.
+
+**Solution**  
+Configured:
+- Resources → All cloud apps  
+
+**Result**  
+Access correctly blocked on non-compliant devices.
+
+---
+
+## 10. Conclusions
+
+This lab demonstrates the implementation of a complete hybrid environment combining on-prem Active Directory with Microsoft Entra ID and Intune, closely simulating a real enterprise setup.
+
+Key concepts covered include:
+- Identity management in Active Directory  
+- User synchronization with Entra Connect  
+- Hybrid device join  
+- Device enrollment and management with Intune  
+- Compliance policy enforcement  
+- Conditional Access based on device state  
+
+In addition to deployment, the lab involved resolving real-world issues related to synchronization, device enrollment, licensing and security policy behavior.
+
+Final outcome:
+- Fully functional hybrid identity environment  
+- Devices managed through Intune  
+- Security policies correctly enforced  
+- Access control based on compliance  
+
+This lab demonstrates not only technical implementation, but also the ability to troubleshoot and resolve issues in a real-world hybrid environment.
