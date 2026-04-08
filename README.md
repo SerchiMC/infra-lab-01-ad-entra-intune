@@ -164,5 +164,4 @@ El resultado es un entorno donde el acceso a recursos depende no solo de la iden
 
 ---
 
-## **11. Capturas**
-Organizadas por bloques funcionales del laboratorio.
+
