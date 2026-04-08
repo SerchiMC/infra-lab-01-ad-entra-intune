@@ -24,7 +24,7 @@ La arquitectura del entorno consta de los siguientes elementos:
 
 Se ha creado el dominio en el controlador de dominio, instalando los servicios necesarios como DNS y DHCP.
 
-![01-nexus-domain-created](01-nexus-domain-created)
+![01-nexus-domain-created](capturas/)01-nexus-domain-created)
 
 Se ha definido la estructura de unidades organizativas (OU), creando una OU principal de usuarios y otras específicas para los distintos departamentos.
 
