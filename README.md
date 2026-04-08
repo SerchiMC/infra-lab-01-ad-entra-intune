@@ -141,3 +141,130 @@ Se intenta acceder a un recurso cloud (portal.office.com) con el usuario cmolina
 Por último, se realiza la misma prueba con el usuario cgarcia, perteneciente al grupo GG-Excepciones, comprobando que el acceso se permite al quedar excluido de la política.
 
 ![28-entra-ca-exclusion-working](capturas/28-entra-ca-exclusion-working.png)
+
+---
+
+## **9. Incidencias relevantes y resolución**
+Durante la implementación del entorno híbrido se identificaron incidencias reales relacionadas con conectividad, sincronización y gestión de dispositivos.
+
+**1. Conectividad parcial en el servidor (DNS)**  
+**Problema**  
+El servidor tenía conectividad (ping) pero no podía acceder a servicios externos.  
+
+**Causa**  
+Falta de configuración de reenviadores DNS.  
+
+**Solución**  
+Configuración de forwarders externos:  
+• 8.8.8.8  
+• 1.1.1.1  
+
+**Conclusión**  
+La conectividad IP no garantiza resolución DNS funcional.  
+
+---
+
+**2. Hybrid Join sin inscripción en Intune**  
+**Problema**  
+El dispositivo estaba correctamente unido:  
+• AzureAdJoined: YES  
+• DomainJoined: YES  
+• MDM: None  
+
+**Causa**  
+El proceso de auto enrollment no se ejecutó automáticamente.  
+
+**Solución**  
+Aplicación de GPO de inscripción MDM:  
+• Ruta:  
+Configuración del equipo → Plantillas administrativas → Componentes de Windows → MDM  
+• Directiva: inscripción automática con credenciales de Entra  
+• Tipo: Usuario  
+
+**Resultado**  
+El dispositivo se registró correctamente en Intune.  
+
+---
+
+**3. Estado inconsistente de enrolamiento**  
+**Problema**  
+El dispositivo desapareció de Entra tras intentar el enrollment.  
+
+**Causa**  
+Registro en estado inconsistente.  
+
+**Solución**  
+dsregcmd /leave  
+• Reinicio del equipo  
+• Inicio de sesión con usuario de dominio  
+• Reaplicación de GPO  
+
+**Resultado**  
+Estado final correcto:  
+• AzureAdJoined: YES  
+• DomainJoined: YES  
+• MDM: Microsoft Intune  
+
+---
+
+**4. Error al asignar licencias (Usage Location)**  
+**Problema**  
+No era posible asignar licencias a usuarios sincronizados.  
+
+**Causa**  
+Falta de atributo "país/región" en Active Directory.  
+
+**Solución**  
+Configuración desde AD:  
+• Usuario → Propiedades → Dirección → País: España  
+
+**Resultado**  
+Asignación de licencias completada correctamente.  
+
+---
+
+**5. Conditional Access no aplicado**  
+**Problema**  
+El acceso no era bloqueado pese a incumplir la política.  
+
+**Causa**  
+La política no estaba aplicada a todos los recursos.  
+
+**Solución**  
+Configuración de:  
+• Recursos → All cloud apps  
+
+**Resultado**  
+El acceso se bloquea correctamente en dispositivos no compliant.  
+
+---
+
+## **10. Conclusiones**
+Este laboratorio ha permitido implementar un entorno híbrido completo combinando Active Directory on-premises con Microsoft Entra ID e Intune, reproduciendo un escenario cercano a un entorno empresarial real.
+
+A nivel técnico, se han trabajado conceptos clave como:  
+• Gestión de identidades en Active Directory  
+• Sincronización de usuarios mediante Entra Connect  
+• Unión híbrida de dispositivos (Hybrid Join)  
+• Inscripción y gestión de dispositivos en Intune  
+• Aplicación de políticas de cumplimiento (compliance)  
+• Implementación de Acceso Condicional basado en estado del dispositivo  
+
+Además de la configuración, el laboratorio ha estado marcado por la resolución de incidencias reales, especialmente en:  
+• Procesos de sincronización entre entornos  
+• Inscripción de dispositivos en MDM  
+• Asignación de licencias en entornos híbridos  
+• Comportamiento de políticas de seguridad  
+
+Estas situaciones han permitido desarrollar habilidades de diagnóstico y validación, entendiendo que en entornos híbridos los procesos no siempre son inmediatos ni lineales.
+
+Como resultado final, se ha conseguido:  
+• Un entorno funcional con identidad híbrida  
+• Dispositivos gestionados mediante Intune  
+• Políticas de seguridad aplicadas correctamente  
+• Control de acceso basado en cumplimiento del dispositivo  
+
+Este laboratorio no solo valida conocimientos técnicos, sino también la capacidad de enfrentarse a problemas reales, analizar su causa y aplicar soluciones de forma estructurada.
+
+---
+
